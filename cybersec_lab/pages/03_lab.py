@@ -68,12 +68,18 @@ if current_stage_idx < 4:
 
     with col2:
         st.subheader("Your Submission")
-        answer = st.text_area("Enter your answer or payload here:", height=150)
+        answer = st.text_area(
+            "Enter your answer or payload here:",
+            height=150,
+            help="Provide your explanation or exploit payload here. Be as specific as possible."
+        )
+        st.caption(f"Character count: {len(answer)}")
 
         # Hint system
         hints_used = progress['hints_used']
         if hints_used < 3:
-            if st.button(f"Use Hint ({hints_used}/3) - Penalty Applied"):
+            if st.button(f"Use Hint ({hints_used}/3) - Penalty Applied", help="Revealing a hint will deduct points from your final score for this stage."):
+                st.toast("Hint revealed! A small penalty has been applied.", icon="💡")
                 st.write(f"**Hint:** {challenge['hints'][hints_used]}")
                 update_user_progress(user_id, challenge_id, progress['current_stage'], hints_used=1)
                 st.rerun()
