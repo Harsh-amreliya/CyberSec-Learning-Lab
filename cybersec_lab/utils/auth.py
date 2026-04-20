@@ -25,23 +25,13 @@ def login_user():
             user = get_user_by_username(username)
             if user:
                 # verify password
-                try:
-                    if stauth.Hasher.check_pw(user['password_hash'], password):
-                        st.session_state['authentication_status'] = True
-                        st.session_state['username'] = username
-                        st.session_state['user_id'] = user['id']
-                        st.rerun()
-                    else:
-                        st.error("Invalid password")
-                except Exception:
-                    # Fallback for different versions of stauth
-                    if stauth.Hasher.verify_password(password, user['password_hash']):
-                        st.session_state['authentication_status'] = True
-                        st.session_state['username'] = username
-                        st.session_state['user_id'] = user['id']
-                        st.rerun()
-                    else:
-                        st.error("Invalid password")
+                if stauth.Hasher.check_pw(user['password_hash'], password):
+                    st.session_state['authentication_status'] = True
+                    st.session_state['username'] = username
+                    st.session_state['user_id'] = user['id']
+                    st.rerun()
+                else:
+                    st.error("Invalid password")
             else:
                 st.error("User not found")
 
