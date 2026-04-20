@@ -1,0 +1,40 @@
+{
+    "id": "path_01",
+    "title": "Path Traversal",
+    "category": "Path Traversal",
+    "difficulty": "Beginner",
+    "base_points": 100,
+    "description": "An endpoint that serves files from a directory based on a filename parameter.",
+    "vuln_code": "@app.route('/files')\ndef get_file():\n    filename = request.args.get('name')\n    with open(f\"./uploads/{filename}\", \"r\") as f:\n        return f.read()",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the vulnerability and what sensitive files could be accessed on a Linux system.",
+            "target": "The application doesn't sanitize the 'name' parameter, allowing an attacker to use '../' to traverse out of the 'uploads' directory. Sensitive files include /etc/passwd."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a payload to read the /etc/passwd file.",
+            "target": "../../../etc/passwd"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How would you fix this using 'os.path.basename'?",
+            "target": "filename = os.path.basename(request.args.get('name'))"
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain how 'os.path.basename' helps prevent path traversal.",
+            "target": "It extracts only the filename part of a path, stripping away any directory components like '../'."
+        }
+    ],
+    "hints": [
+        "Think about how you navigate directories in a terminal.",
+        "../ moves up one directory level.",
+        "Look into 'path sanitization'."
+    ]
+}

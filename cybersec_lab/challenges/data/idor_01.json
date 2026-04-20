@@ -1,0 +1,40 @@
+{
+    "id": "idor_01",
+    "title": "Insecure Direct Object Reference",
+    "category": "IDOR",
+    "difficulty": "Beginner",
+    "base_points": 100,
+    "description": "An endpoint that allows users to view their profile by ID.",
+    "vuln_code": "@app.route('/user/<int:user_id>')\ndef get_user_profile(user_id):\n    user = db.query(f\"SELECT * FROM users WHERE id = {user_id}\")\n    return jsonify(user)",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the logic flaw in this endpoint.",
+            "target": "The application trusts the 'user_id' provided in the URL and does not check if the current user has permission to view that profile."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "If your user ID is 5, how would you try to view user 1's profile?",
+            "target": "Change the URL to /user/1"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "Provide a conceptual fix for this endpoint.",
+            "target": "Check if the requested user_id matches the session user_id or if the user has administrative privileges."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain the importance of horizontal vs vertical access control.",
+            "target": "Horizontal access control prevents users from accessing data of other users at the same level. Vertical access control prevents users from accessing data of users at a higher level (e.g., admins)."
+        }
+    ],
+    "hints": [
+        "What happens if you change the ID in the URL?",
+        "Does the code check who is logged in?",
+        "Authorization vs Authentication."
+    ]
+}

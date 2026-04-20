@@ -1,0 +1,40 @@
+{
+    "id": "sqli_02",
+    "title": "Blind SQL Injection",
+    "category": "SQL Injection",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "A search feature that doesn't return results directly but behaves differently if a record exists.",
+    "vuln_code": "exists = db.query(f\"SELECT 1 FROM products WHERE name = '{search_term}'\")\nif exists:\n    return \"Product found\"\nelse:\n    return \"Product not found\"",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the vulnerability and explain why it is 'blind'.",
+            "target": "The query is vulnerable to SQL injection, but the application only returns a boolean-like response (found/not found), not the data itself."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a payload to check if the first letter of the admin's password is 'A'.",
+            "target": "admin' AND (SELECT SUBSTR(password,1,1) FROM users WHERE username='admin') = 'A"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How would you fix this using parameterized queries?",
+            "target": "db.query(\"SELECT 1 FROM products WHERE name = ?\", (search_term,))"
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain how an attacker can still extract data even if it's not displayed on the page.",
+            "target": "Attacker uses Boolean-based or Time-based techniques to ask the database true/false questions and infer data bit by bit."
+        }
+    ],
+    "hints": [
+        "Notice that the application only tells you if a product exists or not.",
+        "Think about using subqueries and conditional logic in SQL.",
+        "Research 'Boolean-based Blind SQL Injection'."
+    ]
+}

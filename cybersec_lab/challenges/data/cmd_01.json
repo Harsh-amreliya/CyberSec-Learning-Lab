@@ -1,0 +1,40 @@
+{
+    "id": "cmd_01",
+    "title": "Command Injection",
+    "category": "Command Injection",
+    "difficulty": "Beginner",
+    "base_points": 100,
+    "description": "A tool that pings a hostname provided by the user.",
+    "vuln_code": "@app.route('/ping')\ndef ping():\n    hostname = request.args.get('hostname')\n    output = os.popen(f\"ping -c 1 {hostname}\").read()\n    return f\"<pre>{output}</pre>\"",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify how an attacker can execute arbitrary commands.",
+            "target": "The user-provided 'hostname' is directly concatenated into a shell command string and executed."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a payload for 'hostname' to list the files in the current directory.",
+            "target": "8.8.8.8; ls"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How would you rewrite this safely using the 'subprocess' module?",
+            "target": "subprocess.run(['ping', '-c', '1', hostname], capture_output=True)"
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain why using an array of arguments in 'subprocess' is safer than a shell string.",
+            "target": "When using an array, the OS treats each element as a separate argument and does not invoke a shell to interpret special characters like ; or |."
+        }
+    ],
+    "hints": [
+        "Special characters like ; or && can be used to chain commands in a shell.",
+        "Think about what 'os.popen' does.",
+        "Look into the 'subprocess' module in Python."
+    ]
+}

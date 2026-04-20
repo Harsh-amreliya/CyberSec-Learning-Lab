@@ -1,0 +1,40 @@
+{
+    "id": "xss_01",
+    "title": "Reflected XSS",
+    "category": "XSS",
+    "difficulty": "Beginner",
+    "base_points": 100,
+    "description": "A search page that displays the search term back to the user.",
+    "vuln_code": "search_query = request.args.get('q')\nreturn render_template_string(f\"<h1>Results for: {search_query}</h1>\")",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the vulnerability and explain why it's dangerous.",
+            "target": "The 'q' parameter is directly embedded into the HTML response without sanitization, leading to Reflected XSS."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a simple payload to trigger an alert box in the browser.",
+            "target": "<script>alert('XSS')</script>"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How would you fix this code to prevent the injection?",
+            "target": "Use a templating engine like Jinja2 which escapes HTML by default, or manually escape the input using a library like 'markupsafe'."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "What is the difference between Reflected and Stored XSS?",
+            "target": "Reflected XSS is when the payload is delivered via a URL and 'reflected' off the server. Stored XSS is when the payload is permanently stored on the server (e.g., in a database)."
+        }
+    ],
+    "hints": [
+        "The search query is put directly into the HTML.",
+        "HTML tags can be used as part of the input.",
+        "Look into 'HTML escaping'."
+    ]
+}

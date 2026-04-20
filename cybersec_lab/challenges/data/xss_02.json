@@ -1,0 +1,40 @@
+{
+    "id": "xss_02",
+    "title": "DOM-based XSS",
+    "category": "XSS",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "A page that uses JavaScript to display a welcome message from the URL hash.",
+    "vuln_code": "<div id=\"welcome\"></div>\n<script>\n  const name = decodeURIComponent(window.location.hash.substring(1));\n  document.getElementById('welcome').innerHTML = 'Welcome, ' + name;\n</script>",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Explain how the vulnerability occurs in the client-side code.",
+            "target": "The script takes data from 'window.location.hash' and writes it directly to 'innerHTML' without sanitization."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a URL hash that would execute JavaScript when the page is loaded.",
+            "target": "#<img src=x onerror=alert(1)>"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "What JavaScript property should be used instead of 'innerHTML' to prevent this?",
+            "target": "textContent or innerText"
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Why does the server not see the payload in a DOM-based XSS attack using the URL hash?",
+            "target": "The fragment identifier (part after #) is not sent to the server by the browser."
+        }
+    ],
+    "hints": [
+        "The vulnerability is in the JavaScript code, not the server.",
+        "innerHTML is a dangerous sink.",
+        "The part of the URL after '#' is called the hash."
+    ]
+}

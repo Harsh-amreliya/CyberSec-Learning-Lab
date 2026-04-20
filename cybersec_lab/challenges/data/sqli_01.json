@@ -1,0 +1,40 @@
+{
+    "id": "sqli_01",
+    "title": "Basic SQL Injection",
+    "category": "SQL Injection",
+    "difficulty": "Beginner",
+    "base_points": 100,
+    "description": "A simple login form that is vulnerable to SQL injection.",
+    "vuln_code": "query = f\"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'\"",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the line of code that is vulnerable to SQL injection and explain why.",
+            "target": "The SQL query is built using f-strings with direct user input."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a payload for the 'username' field that would allow you to bypass the login without a password.",
+            "target": "' OR '1'='1"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "Rewrite the vulnerable code using parameterized queries to prevent SQL injection.",
+            "target": "cur.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))"
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain the importance of input validation and parameterized queries in preventing SQL injection.",
+            "target": "Parameterized queries separate the SQL code from the data, preventing user input from being interpreted as commands."
+        }
+    ],
+    "hints": [
+        "Look at how the SQL query is constructed.",
+        "Think about how single quotes can be used to break out of the string literal.",
+        "Research 'parameterized queries' in Python's sqlite3 or similar libraries."
+    ]
+}
