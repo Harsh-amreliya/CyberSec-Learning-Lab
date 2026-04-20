@@ -10,24 +10,8 @@ def init_auth():
     if 'logout' not in st.session_state:
         st.session_state['logout'] = False
 
-def get_authenticator():
-    # In a real app, you'd load all users from the DB here
-    # For Streamlit Authenticator, we need a config dictionary
-    # But since we are using a DB, we can't easily use its built-in login widget
-    # without syncing.
-    # Let's implement a custom auth layer or use stauth with a dummy config
-    # and handle the verification ourselves.
-
-    # Actually, streamlit-authenticator 0.3.x has changed its API.
-    # Let's use a simpler approach for this project if stauth is too complex for DB sync.
-    # But the requirement says "Use streamlit-authenticator".
-
-    # We will use a mock config for the Authenticator and handle the actual check manually
-    # or populate it from the DB.
-    pass
-
 def hash_password(password):
-    return stauth.Hasher([password]).generate()[0]
+    return stauth.Hasher.hash(password)
 
 def login_user():
     st.sidebar.title("Login / Register")
@@ -41,13 +25,23 @@ def login_user():
             user = get_user_by_username(username)
             if user:
                 # verify password
-                if stauth.Hasher.verify_password(password, user['password_hash']):
-                    st.session_state['authentication_status'] = True
-                    st.session_state['username'] = username
-                    st.session_state['user_id'] = user['id']
-                    st.rerun()
-                else:
-                    st.error("Invalid password")
+                try:
+                    if stauth.Hasher.check_pw(user['password_hash'], password):
+                        st.session_state['authentication_status'] = True
+                        st.session_state['username'] = username
+                        st.session_state['user_id'] = user['id']
+                        st.rerun()
+                    else:
+                        st.error("Invalid password")
+                except Exception:
+                    # Fallback for different versions of stauth
+                    if stauth.Hasher.verify_password(password, user['password_hash']):
+                        st.session_state['authentication_status'] = True
+                        st.session_state['username'] = username
+                        st.session_state['user_id'] = user['id']
+                        st.rerun()
+                    else:
+                        st.error("Invalid password")
             else:
                 st.error("User not found")
 
