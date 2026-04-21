@@ -25,7 +25,7 @@ def login_user():
             user = get_user_by_username(username)
             if user:
                 # verify password
-                if stauth.Hasher.check_pw(user['password_hash'], password):
+                if stauth.Hasher.check_pw(password, user['password_hash']):
                     st.session_state['authentication_status'] = True
                     st.session_state['username'] = username
                     st.session_state['user_id'] = user['id']
