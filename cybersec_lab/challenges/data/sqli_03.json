@@ -1,0 +1,40 @@
+{
+    "id": "sqli_03",
+    "title": "SQL Injection in Order By",
+    "category": "SQL Injection",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "An endpoint that allows sorting results based on a user-provided column name.",
+    "vuln_code": "sort_column = request.args.get('sort', 'name')\nquery = f\"SELECT id, name, price FROM products ORDER BY {sort_column}\"\nresults = db.execute(query)",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Why is this vulnerable and why can't we use standard placeholders (?) for the column name?",
+            "target": "The column name is directly put into the query. Standard placeholders often only work for values, not for identifiers like table or column names."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a payload to extract the database version using a time-based delay (assume PostgreSQL).",
+            "target": "(CASE WHEN (SUBSTR(version(),1,1)='P') THEN name ELSE id END)"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How would you fix this using an allowlist?",
+            "target": "Check if the 'sort' parameter is in ['name', 'price', 'id']. If not, default to 'name'."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Why is input validation (allowlisting) crucial when you cannot use parameterized queries for certain parts of a SQL statement?",
+            "target": "Allowlisting ensures that only known-safe values are used, preventing an attacker from injecting arbitrary SQL commands or identifiers."
+        }
+    ],
+    "hints": [
+        "Column names cannot usually be parameterized.",
+        "Think about using a CASE statement in the ORDER BY clause.",
+        "An allowlist is a list of allowed values."
+    ]
+}

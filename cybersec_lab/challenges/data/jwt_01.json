@@ -1,0 +1,40 @@
+{
+    "id": "jwt_01",
+    "title": "JWT None Algorithm",
+    "category": "JWT",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "An application that uses JWT for authentication but trusts the 'alg' header.",
+    "vuln_code": "header, payload, signature = jwt_token.split('.')\nalg = json.loads(base64_decode(header))['alg']\nif alg == 'none':\n    # Trust the payload without verification\n    user_data = json.loads(base64_decode(payload))\nelif alg == 'HS256':\n    # Verify signature\n    ...",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the critical flaw in the JWT handling logic.",
+            "target": "The code allows the 'none' algorithm, which means it will accept tokens with no signature, allowing attackers to forge arbitrary payloads."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "How would you modify a JWT to log in as 'admin' using the 'none' algorithm?",
+            "target": "Change the header to {'alg': 'none'}, change the payload to {'username': 'admin'}, and remove the signature (keeping the trailing dot)."
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How should you properly verify a JWT using a library like PyJWT?",
+            "target": "jwt.decode(token, secret, algorithms=['HS256']) - explicitly specifying allowed algorithms."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain why explicitly defining allowed algorithms is important.",
+            "target": "It prevents 'algorithm confusion' attacks where an attacker switches the algorithm to something weaker or different (like 'none' or switching between RSA and HMAC)."
+        }
+    ],
+    "hints": [
+        "Check the 'alg' header in the JWT.",
+        "The 'none' algorithm was a common vulnerability in early JWT libraries.",
+        "A JWT has three parts: Header, Payload, Signature."
+    ]
+}

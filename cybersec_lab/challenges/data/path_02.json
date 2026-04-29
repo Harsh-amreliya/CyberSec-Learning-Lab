@@ -1,0 +1,40 @@
+{
+    "id": "path_02",
+    "title": "Advanced Path Traversal with Null Byte",
+    "category": "Path Traversal",
+    "difficulty": "Advanced",
+    "base_points": 350,
+    "description": "An application that appends .pdf to the filename and is running on an older version of Python/C that is vulnerable to null byte injection.",
+    "vuln_code": "filename = request.args.get('name')\npath = f\"./documents/{filename}.pdf\"\nwith open(path, \"rb\") as f:\n    return f.read()",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify how an attacker can bypass the '.pdf' extension enforcement.",
+            "target": "An attacker can use a null byte (%00) to terminate the string in the underlying C call, effectively ignoring the '.pdf' extension."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a payload to read the /etc/passwd file, bypassing the .pdf extension.",
+            "target": "../../../etc/passwd%00"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "Besides updating the environment, how can you validate that the filename doesn't contain null bytes or other dangerous characters?",
+            "target": "Check if '\\0' is in the filename string, or use a regex to only allow alphanumeric characters and a single dot."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain why the null byte (%00) was historically effective in bypassing file extension checks.",
+            "target": "In C and many other languages, a null byte signifies the end of a string. High-level languages might allow null bytes in strings, but when passed to lower-level C system calls (like open), the string is truncated at the first null byte."
+        }
+    ],
+    "hints": [
+        "The application forces a .pdf extension.",
+        "Think about how strings are terminated in the C language.",
+        "Research 'Null Byte Injection'."
+    ]
+}

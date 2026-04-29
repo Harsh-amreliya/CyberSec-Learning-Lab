@@ -1,0 +1,40 @@
+{
+    "id": "ssrf_01",
+    "title": "Server-Side Request Forgery",
+    "category": "SSRF",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "An application that fetches metadata from a provided URL.",
+    "vuln_code": "@app.route('/fetch_metadata')\ndef fetch_metadata():\n    url = request.args.get('url')\n    response = requests.get(url)\n    return response.text",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the vulnerability and what an attacker can achieve.",
+            "target": "The server fetches a URL provided by the user without validation, allowing the attacker to make the server send requests to internal resources."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Provide a URL to access the AWS metadata service (169.254.169.254).",
+            "target": "http://169.254.169.254/latest/meta-data/"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How would you mitigate this using an allowlist?",
+            "target": "Validate the URL against a list of approved domains or IP addresses before making the request."
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Why is SSRF particularly dangerous in cloud environments?",
+            "target": "Cloud environments often have metadata services (like AWS, GCP, Azure) that can provide sensitive information like IAM credentials or configuration data."
+        }
+    ],
+    "hints": [
+        "The server is doing a request on your behalf.",
+        "Internal IP addresses might be accessible from the server but not from the internet.",
+        "169.254.169.254 is a special IP."
+    ]
+}

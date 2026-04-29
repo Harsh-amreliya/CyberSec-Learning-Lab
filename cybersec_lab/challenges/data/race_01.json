@@ -1,0 +1,40 @@
+{
+    "id": "race_01",
+    "title": "Bank Transfer Race Condition",
+    "category": "Race Conditions",
+    "difficulty": "Advanced",
+    "base_points": 350,
+    "description": "A bank transfer function that checks balance before deducting but lacks locking.",
+    "vuln_code": "def transfer(from_user, to_user, amount):\n    balance = db.get_balance(from_user)\n    if balance >= amount:\n        # Simulate some processing delay\n        time.sleep(0.1)\n        db.update_balance(from_user, balance - amount)\n        db.update_balance(to_user, db.get_balance(to_user) + amount)\n        return True\n    return False",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify why this code is vulnerable to race conditions.",
+            "target": "The check-then-act pattern (TOCTOU - Time-of-Check to Time-of-Use) is not atomic. Multiple threads could pass the balance check before the first one updates it."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "Explain how an attacker would exploit this to send more money than they have.",
+            "target": "The attacker would send many simultaneous requests to transfer money. If the requests are processed in parallel, multiple requests might see the same initial balance and proceed with the transfer."
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "How would you fix this in a SQL database using a single atomic update?",
+            "target": "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?"
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Explain the concept of 'atomicity' in database transactions.",
+            "target": "Atomicity ensures that a series of operations are treated as a single unit, which either all succeed or all fail, preventing partial updates and race conditions."
+        }
+    ],
+    "hints": [
+        "What happens if two requests come in at the exact same time?",
+        "Look at the time.sleep(0.1) - it increases the window of opportunity.",
+        "Think about atomic operations."
+    ]
+}

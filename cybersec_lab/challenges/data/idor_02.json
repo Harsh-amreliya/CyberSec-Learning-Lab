@@ -1,0 +1,40 @@
+{
+    "id": "idor_02",
+    "title": "IDOR in File Deletion",
+    "category": "IDOR",
+    "difficulty": "Intermediate",
+    "base_points": 200,
+    "description": "An endpoint that deletes a user's file based on a file ID.",
+    "vuln_code": "@app.route('/delete_file', methods=['POST'])\ndef delete_file():\n    file_id = request.form.get('file_id')\n    db.execute(\"DELETE FROM files WHERE id = ?\", (file_id,))\n    return \"File deleted\"",
+    "stages": [
+        {
+            "id": 1,
+            "name": "Find the vulnerability",
+            "instruction": "Identify the missing check in this deletion logic.",
+            "target": "The code deletes the file with the given ID without verifying if the file belongs to the currently logged-in user."
+        },
+        {
+            "id": 2,
+            "name": "Exploit it",
+            "instruction": "If you know another user's file ID is 100, how would you delete it?",
+            "target": "Send a POST request to /delete_file with file_id=100"
+        },
+        {
+            "id": 3,
+            "name": "Patch it",
+            "instruction": "Provide a SQL query that would delete the file only if it belongs to the current user.",
+            "target": "DELETE FROM files WHERE id = ? AND owner_id = ?"
+        },
+        {
+            "id": 4,
+            "name": "Explain it",
+            "instruction": "Why is it important to perform authorization checks on every state-changing request?",
+            "target": "To ensure that users can only perform actions on resources they are authorized to access, preventing unauthorized data modification or deletion."
+        }
+    ],
+    "hints": [
+        "Does the DELETE query care who is asking?",
+        "You need to link the file to its owner.",
+        "Think about adding a WHERE clause."
+    ]
+}
